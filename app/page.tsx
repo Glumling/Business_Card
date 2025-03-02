@@ -4,11 +4,24 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Linkedin, Phone, Mail, Github, Settings } from "lucide-react"
+import { ArrowRight, Linkedin, Phone, Mail, Github, Settings, Upload } from "lucide-react"
 import { useSettings } from "@/components/SettingsContext"
 import { AnimatedBackground } from "@/components/AnimatedBackground"
 import { PageLoader } from "@/components/PageLoader"
 import { motion, AnimatePresence } from "framer-motion"
+import { SettingsPanel } from "@/components/SettingsPanel"
+import { StyleProvider, StyledButton, StyledCard } from "@/components/StyleProvider"
+import { ImageUploader } from "@/components/ImageUploader"
+
+// Remove this function completely
+// export default function Home() {
+//   return (
+//     <main className="min-h-screen">
+//       <StyleDemo />
+//       <SettingsPanel />
+//     </main>
+//   );
+// }
 
 const createVCardData = () => {
   const vCard = `BEGIN:VCARD
@@ -23,6 +36,9 @@ END:VCARD`
 export default function DigitalCard() {
   const { settings } = useSettings()
   const [isLoading, setIsLoading] = useState(true)
+  const [showSettings, setShowSettings] = useState(false)
+  const [showBannerUploader, setShowBannerUploader] = useState(false)
+  const [showProfileUploader, setShowProfileUploader] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2000)
@@ -66,57 +82,86 @@ export default function DigitalCard() {
         variants={pageVariants}
         transition={pageTransition}
       >
-        {/* Add fallback for background animation type */}
         <AnimatedBackground 
-          type={settings.backgroundAnimation as "boxes" | "particles" | "waves" | "letterGlitch" | "honeycomb" | "gridPattern" | "cubes" | "darkPattern" | "isoCubes" | "trianglePattern" | "trippyCircles" | "cubicHoles"} 
+          type={settings.backgroundAnimation || "boxes"} 
           color={settings.profileColor} 
         />
 
         <div className="relative max-w-md mx-auto space-y-6 p-6">
           {/* Settings Navigation */}
           <div className="flex justify-end">
-            <Link href="/settings/design">
-              <Button variant="ghost" size="icon">
-                <Settings className="h-6 w-6" />
-              </Button>
-            </Link>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setShowSettings(!showSettings)}
+            >
+              <Settings className="h-6 w-6" />
+            </Button>
           </div>
 
           {/* Profile Section with Banner */}
-          <motion.div
-            className={`rounded-xl overflow-hidden backdrop-blur-sm shadow-lg`}
+          <StyleProvider
+            className="rounded-xl overflow-hidden shadow-lg"
             style={{ backgroundColor: `${settings.profileColor}40` }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
           >
             {/* Banner */}
-            <div className="relative h-32 bg-gradient-to-r from-blue-900/50 to-purple-900/50">
-              <Image
-                src="/placeholder.svg?height=128&width=512"
-                alt="Profile Banner"
-                fill
-                className="object-cover"
-                priority
-              />
+            <div className="relative h-32 w-full overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-900/50 to-purple-900/50" />
+              
+              {settings.bannerImage ? (
+                <div 
+                  className="absolute inset-0 bg-center bg-no-repeat"
+                  style={{
+                    backgroundImage: `url(${settings.bannerImage})`,
+                    backgroundSize: `${(settings.bannerZoom || 1) * 100}%`,
+                    transform: `translate(${settings.bannerPosition?.x || 0}px, ${settings.bannerPosition?.y || 0}px)`,
+                  }}
+                />
+              ) : (
+                <Image
+                  src="/placeholder.svg?height=128&width=512"
+                  alt="Profile Banner"
+                  fill
+                  className="object-cover w-full"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 512px"
+                />
+              )}
+              
+              {/* Remove the banner upload button */}
             </div>
-
+          
             {/* Profile Content */}
             <div className="px-6 pb-6">
               {/* Profile Picture - Overlapping Banner */}
-              <div className="relative -mt-16 mb-4">
+              <div className="relative -mt-16 mb-4 flex">
                 <motion.div
-                  className="relative w-28 h-28 rounded-full border-4 overflow-hidden"
+                  className="relative w-28 h-28 rounded-full border-4 overflow-hidden bg-white"
                   style={{ borderColor: settings.profileColor }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Image
-                    src="/placeholder.svg?height=112&width=112"
-                    alt="Profile Picture"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
+                  {settings.profileImage ? (
+                    <div 
+                      className="absolute inset-0 bg-center bg-no-repeat"
+                      style={{
+                        backgroundImage: `url(${settings.profileImage})`,
+                        backgroundSize: `${(settings.profileZoom || 1) * 100}%`,
+                        transform: `translate(${settings.profilePosition?.x || 0}px, ${settings.profilePosition?.y || 0}px)`,
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      src="/placeholder.svg?height=112&width=112"
+                      alt="Profile Picture"
+                      fill
+                      className="object-cover"
+                      priority
+                      sizes="112px"
+                    />
+                  )}
+                  
+                  {/* Remove the profile picture upload button */}
                 </motion.div>
               </div>
 
@@ -149,35 +194,40 @@ export default function DigitalCard() {
                 </motion.div>
               </div>
             </div>
-          </motion.div>
+          </StyleProvider>
 
           {/* Skills Tags */}
           <div className="flex flex-wrap justify-center gap-2">
             {["A.I", "Python", "JavaScript", "Updated", "C++", "Entrepreneurial"].map((skill, index) => (
-              <motion.span
+              <StyleProvider
                 key={skill}
-                className={`px-4 py-2 backdrop-blur-sm rounded-full text-base shadow-md`}
+                className="px-4 py-2 rounded-full text-base"
                 style={{ backgroundColor: `${settings.profileColor}40` }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
               >
-                {skill}
-              </motion.span>
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  {skill}
+                </motion.span>
+              </StyleProvider>
             ))}
           </div>
 
           {/* Save Contact Button */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
-            <a href={createVCardData()} download="Rayyaan_Haamid.vcf">
-              <Button
-                className="w-full text-lg h-[52px] backdrop-blur-sm shadow-md"
-                style={{ backgroundColor: settings.profileColor }}
+            <a href={createVCardData()} download="Rayyaan_Haamid.vcf" className="block w-full">
+              <StyledButton
+                className="w-full text-lg font-semibold"
+                size="xl"
               >
-                Save Contact
-              </Button>
+                <div className="flex items-center justify-center h-[60px]">
+                  Save Contact
+                </div>
+              </StyledButton>
             </a>
           </motion.div>
 
@@ -217,9 +267,8 @@ export default function DigitalCard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 + index * 0.1 }}
               >
-                <Button
-                  variant="ghost"
-                  className={`w-full min-h-[80px] backdrop-blur-sm shadow-md px-6 py-4`}
+                <StyledCard
+                  className="w-full min-h-[80px] px-6 py-4"
                   style={{ backgroundColor: `${settings.profileColor}40` }}
                 >
                   <div className="flex flex-col items-start gap-1 flex-grow">
@@ -230,11 +279,30 @@ export default function DigitalCard() {
                     {item.value && <span className="opacity-75 text-base pl-10">{item.value}</span>}
                   </div>
                   <ArrowRight className="h-5 w-5 flex-shrink-0 transition-transform group-hover:translate-x-1" />
-                </Button>
+                </StyledCard>
               </motion.a>
             ))}
           </div>
         </div>
+        
+        {/* Conditionally render settings panel */}
+        <AnimatePresence>
+          {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+        </AnimatePresence>
+        
+        {/* Image Uploaders */}
+        {showBannerUploader && (
+          <ImageUploader 
+            type="banner" 
+            onClose={() => setShowBannerUploader(false)} 
+          />
+        )}
+        {showProfileUploader && (
+          <ImageUploader 
+            type="profile" 
+            onClose={() => setShowProfileUploader(false)} 
+          />
+        )}
       </motion.main>
     </AnimatePresence>
   )

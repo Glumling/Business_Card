@@ -8,8 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "predeploy": "touch out/.nojekyll && npm run build",
-    "deploy": "gh-pages -d out -t true"
+    "predeploy": "npm run build && type nul > out/.nojekyll",
+    "deploy": "gh-pages -d out --dotfiles"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",

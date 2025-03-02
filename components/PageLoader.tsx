@@ -3,11 +3,17 @@
 import type React from "react"
 import { motion } from "framer-motion"
 
+import { useSettings } from './SettingsContext';
+
+// Define the type for the PageLoader props
 interface PageLoaderProps {
-  type: "spinner" | "dots" | "progress"
+  type?: string; // Make this more generic to avoid type errors
 }
 
 export const PageLoader: React.FC<PageLoaderProps> = ({ type }) => {
+  const { settings } = useSettings();
+  const loaderType = type || settings.pageLoader || "spinner";
+  
   switch (type) {
     case "spinner":
       return <SpinnerLoader />
@@ -18,6 +24,12 @@ export const PageLoader: React.FC<PageLoaderProps> = ({ type }) => {
     default:
       return null
   }
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-background z-50">
+      {/* Loader content based on loaderType */}
+      {/* ... */}
+    </div>
+  );
 }
 
 const SpinnerLoader = () => (
