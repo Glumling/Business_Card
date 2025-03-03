@@ -310,44 +310,6 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Animation Settings</h3>
             
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Animation Speed</label>
-              <select 
-                value={getSettingValue('animations.speed', 'normal')}
-                onChange={(e) => updateNestedSettings(['animations', 'speed'], e.target.value)}
-                className="w-full p-2 rounded-lg bg-background border border-input text-foreground"
-              >
-                <option value="slow">Slow</option>
-                <option value="normal">Normal</option>
-                <option value="fast">Fast</option>
-              </select>
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Animation Type</label>
-              <select 
-                value={getSettingValue('animations.type', 'smooth')}
-                onChange={(e) => updateNestedSettings(['animations', 'type'], e.target.value)}
-                className="w-full p-2 rounded-lg bg-background border border-input text-foreground"
-              >
-                <option value="smooth">Smooth</option>
-                <option value="bounce">Bounce</option>
-                <option value="elastic">Elastic</option>
-              </select>
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Animation Intensity</label>
-              <select 
-                value={getSettingValue('animations.intensity', 'medium')}
-                onChange={(e) => updateNestedSettings(['animations', 'intensity'], e.target.value)}
-                className="w-full p-2 rounded-lg bg-background border border-input text-foreground"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
             
             <div className="space-y-2">
               <label className="text-sm font-medium">Page Transition</label>
@@ -366,20 +328,7 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
 
           {/* Layout Settings */}
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Layout Settings</h3>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Card Style</label>
-              <select 
-                value={getSettingValue('layout.cardStyle', 'grid')}
-                onChange={(e) => updateNestedSettings(['layout', 'cardStyle'], e.target.value)}
-                className="w-full p-2 rounded-lg bg-background border border-input text-foreground"
-              >
-                <option value="grid">Grid</option>
-                <option value="masonry">Masonry</option>
-                <option value="list">List</option>
-              </select>
-            </div>
+            <h3 className="text-lg font-semibold">Component Styling</h3>
             
             <div className="space-y-2">
               <label className="text-sm font-medium">Spacing</label>
@@ -392,34 +341,92 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
                 <option value="comfortable">Comfortable</option>
                 <option value="spacious">Spacious</option>
               </select>
+              <p className="text-xs text-muted-foreground">
+                Controls the spacing between elements on the page
+              </p>
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium">Border Radius</label>
+              <label className="text-sm font-medium">Corner Style</label>
               <select 
                 value={getSettingValue('layout.borderRadius', 'medium')}
                 onChange={(e) => updateNestedSettings(['layout', 'borderRadius'], e.target.value)}
                 className="w-full p-2 rounded-lg bg-background border border-input text-foreground"
               >
-                <option value="none">None</option>
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
+                <option value="none">Blocky (No Rounding)</option>
+                <option value="small">Semi-Rounded</option>
+                <option value="medium">Rounded</option>
+                <option value="large">Fully Rounded</option>
               </select>
+              <div className="mt-2 grid grid-cols-4 gap-2">
+                {['none', 'small', 'medium', 'large'].map((radius) => (
+                  <div 
+                    key={radius}
+                    className={`h-8 border border-gray-300 ${
+                      radius === 'none' ? 'rounded-none' : 
+                      radius === 'small' ? 'rounded-sm' : 
+                      radius === 'medium' ? 'rounded-md' : 
+                      'rounded-lg'
+                    } ${getSettingValue('layout.borderRadius', 'medium') === radius ? 'bg-primary/20' : ''}`}
+                    onClick={() => updateNestedSettings(['layout', 'borderRadius'], radius)}
+                  />
+                ))}
+              </div>
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium">Shadow Intensity</label>
+              <label className="text-sm font-medium">Shadow Style</label>
               <select 
                 value={getSettingValue('layout.shadowIntensity', 'medium')}
                 onChange={(e) => updateNestedSettings(['layout', 'shadowIntensity'], e.target.value)}
                 className="w-full p-2 rounded-lg bg-background border border-input text-foreground"
               >
-                <option value="none">None</option>
+                <option value="none">No Shadow</option>
                 <option value="subtle">Subtle</option>
                 <option value="medium">Medium</option>
-                <option value="strong">Strong</option>
+                <option value="strong">Pronounced</option>
               </select>
+              <div className="mt-2 grid grid-cols-4 gap-2">
+                {['none', 'subtle', 'medium', 'strong'].map((shadow) => (
+                  <div 
+                    key={shadow}
+                    className={`h-8 rounded border border-gray-300 ${
+                      shadow === 'none' ? '' : 
+                      shadow === 'subtle' ? 'shadow-sm' : 
+                      shadow === 'medium' ? 'shadow-md' : 
+                      'shadow-lg'
+                    } ${getSettingValue('layout.shadowIntensity', 'medium') === shadow ? 'bg-primary/20' : ''}`}
+                    onClick={() => updateNestedSettings(['layout', 'shadowIntensity'], shadow)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Preview of settings */}
+            <div className="mt-4 border-t pt-3">
+              <label className="text-sm font-medium">Preview</label>
+              <div className="mt-2">
+                <StyleProvider 
+                  className={`p-3 ${
+                    getSettingValue('layout.spacing', 'comfortable') === 'compact' ? 'p-2' : 
+                    getSettingValue('layout.spacing', 'comfortable') === 'spacious' ? 'p-4' : 'p-3'
+                  } ${
+                    getSettingValue('layout.borderRadius', 'medium') === 'none' ? 'rounded-none' : 
+                    getSettingValue('layout.borderRadius', 'medium') === 'small' ? 'rounded-sm' : 
+                    getSettingValue('layout.borderRadius', 'medium') === 'medium' ? 'rounded-md' : 
+                    'rounded-lg'
+                  } ${
+                    getSettingValue('layout.shadowIntensity', 'medium') === 'none' ? '' : 
+                    getSettingValue('layout.shadowIntensity', 'medium') === 'subtle' ? 'shadow-sm' : 
+                    getSettingValue('layout.shadowIntensity', 'medium') === 'medium' ? 'shadow-md' : 
+                    'shadow-lg'
+                  }`}
+                >
+                  <div className="h-12 flex items-center justify-center">
+                    <span>Component Preview</span>
+                  </div>
+                </StyleProvider>
+              </div>
             </div>
           </div>
         </div>

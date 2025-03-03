@@ -127,7 +127,7 @@ export const StyleProvider = ({
 interface StyledCardProps {
   children: React.ReactNode;
   className?: string;
-  style?: React.CSSProperties; // Add style prop
+  style?: React.CSSProperties;
 }
 
 export const StyledCard = ({ children, className, style }: StyledCardProps) => {
@@ -136,25 +136,25 @@ export const StyledCard = ({ children, className, style }: StyledCardProps) => {
   const shadowIntensity = settings.layout?.shadowIntensity || 'medium';
   const spacing = settings.layout?.spacing || 'comfortable';
   
-  // Map settings to actual CSS classes
+  // Map settings to actual CSS classes with more aggressive styling
   const radiusClasses = {
     none: 'rounded-none',
     small: 'rounded',
-    medium: 'rounded-md',
-    large: 'rounded-lg'
+    medium: 'rounded-xl', // More aggressive rounding
+    large: 'rounded-3xl' // Much more aggressive rounding
   };
   
   const shadowClasses = {
     none: 'shadow-none',
     subtle: 'shadow-sm',
-    medium: 'shadow',
-    strong: 'shadow-lg'
+    medium: 'shadow-md',
+    strong: 'shadow-2xl' // More dramatic shadow
   };
   
   const spacingClasses = {
     compact: 'p-2',
     comfortable: 'p-4',
-    spacious: 'p-6'
+    spacious: 'p-8' // More spacious padding
   };
   
   return (
@@ -163,15 +163,17 @@ export const StyledCard = ({ children, className, style }: StyledCardProps) => {
         radiusClasses[borderRadius],
         shadowClasses[shadowIntensity],
         spacingClasses[spacing],
+        'transition-all duration-300', // Smooth transitions
         className
       )}
       variant="card"
-      style={style} // Pass style prop
+      style={style}
     >
       {children}
     </StyleProvider>
   );
 };
+
 // StyledButton component
 interface StyledButtonProps {
   children: React.ReactNode;
@@ -192,21 +194,30 @@ export const StyledButton = ({
 }: StyledButtonProps) => {
   const { settings } = useSettings();
   const borderRadius = settings.layout?.borderRadius || 'medium';
+  const shadowIntensity = settings.layout?.shadowIntensity || 'medium';
   
-  // Map settings to actual CSS classes
+  // Map settings to actual CSS classes with more aggressive styling
   const radiusClasses = {
     none: 'rounded-none',
     small: 'rounded',
-    medium: 'rounded-md',
-    large: 'rounded-lg'
+    medium: 'rounded-xl', // More aggressive rounding
+    large: 'rounded-full' // Fully rounded for buttons
+  };
+  
+  // Map shadow settings
+  const shadowClasses = {
+    none: 'shadow-none',
+    subtle: 'shadow-sm',
+    medium: 'shadow-md',
+    strong: 'shadow-2xl' // More dramatic shadow
   };
   
   // Size classes - make these more distinct
   const sizeClasses = {
-    sm: 'px-2 py-1 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
-    xl: 'px-8 py-4 text-xl font-bold min-h-[60px]'
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-5 py-2.5 text-base',
+    lg: 'px-7 py-3.5 text-lg',
+    xl: 'px-9 py-5 text-xl font-bold min-h-[70px]' // Larger button
   };
   
   return (
@@ -216,13 +227,17 @@ export const StyledButton = ({
       disabled={disabled}
       className={cn(
         radiusClasses[borderRadius],
+        shadowClasses[shadowIntensity],
         sizeClasses[size],
-        'font-medium transition-all w-full',
+        'font-medium transition-all w-full transform hover:scale-[1.02] active:scale-[0.98]', // Add subtle scaling effect
         disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
     >
-      <StyleProvider variant="button" className="w-full h-full">
+      <StyleProvider 
+        variant="button" 
+        className="w-full h-full flex items-center justify-center"
+      >
         {children}
       </StyleProvider>
     </button>

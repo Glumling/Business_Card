@@ -21,8 +21,8 @@ export interface Settings {
     intensity: "low" | "medium" | "high";
     pageTransition: "fade" | "slide" | "scale" | "none";
   };
+  transitionStyle: "fade" | "smooth"; // Add this line as a top-level property
   layout: {
-    cardStyle: "grid" | "masonry" | "list";
     spacing: "compact" | "comfortable" | "spacious";
     borderRadius: "none" | "small" | "medium" | "large";
     shadowIntensity: "none" | "subtle" | "medium" | "strong";
@@ -51,8 +51,9 @@ const initialSettings: Settings = {
     intensity: "medium",
     pageTransition: "fade"
   },
+  transitionStyle: "smooth", // Add this line with a default value
+  // In the initialSettings object
   layout: {
-    cardStyle: "grid",
     spacing: "comfortable",
     borderRadius: "medium",
     shadowIntensity: "medium"
